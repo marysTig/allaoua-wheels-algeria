@@ -21,36 +21,21 @@ import {
 } from "lucide-react";
 
 import heroImg from "@/assets/hero.jpg";
-import vanH1 from "@/assets/van-h1.jpg";
-import vanTrafic from "@/assets/van-trafic.jpg";
-import vanVito from "@/assets/van-vito.jpg";
-import vanDucato from "@/assets/van-ducato.jpg";
-import vanTraveller from "@/assets/van-traveller.jpg";
-import vanTransit from "@/assets/van-transit.jpg";
-
-const PHONE_ALLAOUA = "0770646557";
-const PHONE_IDIR = "0540845843";
-const WA_ALLAOUA = "213770646557";
-const WA_IDIR = "213540845843";
-const ADDRESS = "Cité 50 logements, Seddouk 06011, Algérie";
-
-const waLink = (number: string, message: string) =>
-  `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+import {
+  store,
+  useAppData,
+  waLink,
+  telLink,
+  formatPhone,
+  type Vehicle,
+  type AgencyInfo,
+} from "@/lib/admin-store";
 
 const NAV = [
   { label: "Accueil", href: "#accueil" },
   { label: "Véhicules", href: "#vehicules" },
   { label: "Services", href: "#services" },
   { label: "Contact", href: "#contact" },
-];
-
-const VEHICLES = [
-  { name: "Hyundai H1", category: "Minibus", image: vanH1, seats: "9 Sièges" },
-  { name: "Renault Trafic", category: "Minibus", image: vanTrafic, seats: "9 Sièges" },
-  { name: "Mercedes Vito", category: "Minibus", image: vanVito, seats: "9 Sièges" },
-  { name: "Fiat Ducato", category: "Utilitaire", image: vanDucato, seats: "9 Sièges" },
-  { name: "Peugeot Traveller", category: "Berline", image: vanTraveller, seats: "9 Sièges" },
-  { name: "Ford Transit Custom", category: "Utilitaire", image: vanTransit, seats: "9 Sièges" },
 ];
 
 export const Route = createFileRoute("/")({
@@ -74,7 +59,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function Header() {
+function Header({ agency }: { agency: AgencyInfo }) {
   const [open, setOpen] = useState(false);
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur">
@@ -102,7 +87,7 @@ function Header() {
 
         <div className="flex items-center gap-2">
           <a
-            href={`tel:+213${PHONE_ALLAOUA.slice(1)}`}
+            href={telLink(agency.phone1)}
             className="hidden items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm transition-transform hover:scale-[1.03] sm:inline-flex"
           >
             <Phone className="h-4 w-4" />
@@ -131,7 +116,7 @@ function Header() {
             </a>
           ))}
           <a
-            href={`tel:+213${PHONE_ALLAOUA.slice(1)}`}
+            href={telLink(agency.phone1)}
             className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground"
           >
             <Phone className="h-4 w-4" />
@@ -143,7 +128,7 @@ function Header() {
   );
 }
 
-function Hero() {
+function Hero({ agency }: { agency: AgencyInfo }) {
   return (
     <section id="accueil" className="relative overflow-hidden">
       <img
@@ -157,7 +142,7 @@ function Hero() {
       <div className="relative mx-auto flex min-h-[560px] max-w-6xl flex-col items-start justify-center px-4 py-24">
         <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-white">
           <Clock className="h-3.5 w-3.5 text-accent" />
-          Ouvert 24h/24 — 7j/7
+          {agency.hours}
         </span>
         <h1 className="max-w-2xl font-display text-4xl font-extrabold leading-tight text-white sm:text-5xl">
           Location de voitures à Seddouk,{" "}
@@ -169,14 +154,14 @@ function Hero() {
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <a
-            href={`tel:+213${PHONE_ALLAOUA.slice(1)}`}
+            href={telLink(agency.phone1)}
             className="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3.5 font-semibold text-accent-foreground shadow-lg transition-transform hover:scale-[1.03]"
           >
             <Phone className="h-5 w-5" />
             Appeler
           </a>
           <a
-            href={waLink(WA_ALLAOUA, "Bonjour, je souhaite louer un véhicule. Pouvez-vous me donner plus d'informations ?")}
+            href={waLink(agency.phone1, "Bonjour, je souhaite louer un véhicule. Pouvez-vous me donner plus d'informations ?")}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl bg-whatsapp px-6 py-3.5 font-semibold text-whatsapp-foreground shadow-lg transition-transform hover:scale-[1.03]"
@@ -197,12 +182,12 @@ function Hero() {
   );
 }
 
-function VehicleCard({ vehicle }: { vehicle: (typeof VEHICLES)[number] }) {
+function VehicleCard({ vehicle, agency }: { vehicle: Vehicle; agency: AgencyInfo }) {
   const specs = [
-    { icon: Settings2, label: "Manuelle" },
-    { icon: Fuel, label: "Diesel" },
-    { icon: Users, label: vehicle.seats },
-    { icon: DoorOpen, label: "5 Portes" },
+    { icon: Settings2, label: vehicle.transmission },
+    { icon: Fuel, label: vehicle.fuel },
+    { icon: Users, label: `${vehicle.seats} Sièges` },
+    { icon: DoorOpen, label: `${vehicle.doors} Portes` },
   ];
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-lg">
@@ -213,11 +198,16 @@ function VehicleCard({ vehicle }: { vehicle: (typeof VEHICLES)[number] }) {
           loading="lazy"
           width={1024}
           height={768}
-          className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="aspect-[4/3] w-full bg-muted object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <span className="absolute left-3 top-3 rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wide text-accent-foreground">
           {vehicle.category}
         </span>
+        {!vehicle.available && (
+          <span className="absolute right-3 top-3 rounded-full bg-destructive px-3 py-1 text-xs font-bold uppercase tracking-wide text-destructive-foreground">
+            Indisponible
+          </span>
+        )}
       </div>
       <div className="flex flex-1 flex-col p-5">
         <h3 className="font-display text-xl font-bold text-foreground">{vehicle.name}</h3>
@@ -229,18 +219,24 @@ function VehicleCard({ vehicle }: { vehicle: (typeof VEHICLES)[number] }) {
             </div>
           ))}
         </div>
-        <div className="mt-3 flex items-start gap-2 text-sm text-muted-foreground">
-          <Gauge className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-          <span>Limité à 500 Km/jour — illimité à partir de 6 jours</span>
-        </div>
+        {vehicle.mileage && (
+          <div className="mt-3 flex items-start gap-2 text-sm text-muted-foreground">
+            <Gauge className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <span>{vehicle.mileage}</span>
+          </div>
+        )}
         <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
           <div>
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Prix / jour</p>
-            <p className="font-display font-bold text-primary">Prix sur demande</p>
+            <p className="font-display font-bold text-primary">
+              {vehicle.pricePerDay > 0
+                ? `${vehicle.pricePerDay.toLocaleString("fr-FR")} DA`
+                : "Prix sur demande"}
+            </p>
           </div>
           <a
             href={waLink(
-              WA_ALLAOUA,
+              agency.phone1,
               `Bonjour, je souhaite réserver le véhicule ${vehicle.name}, merci de me donner plus d'informations.`,
             )}
             target="_blank"
@@ -256,7 +252,7 @@ function VehicleCard({ vehicle }: { vehicle: (typeof VEHICLES)[number] }) {
   );
 }
 
-function Vehicles() {
+function Vehicles({ vehicles, agency }: { vehicles: Vehicle[]; agency: AgencyInfo }) {
   return (
     <section id="vehicules" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20">
       <div className="mb-10 text-center">
@@ -269,27 +265,16 @@ function Vehicles() {
         </p>
       </div>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {VEHICLES.map((v) => (
-          <VehicleCard key={v.name} vehicle={v} />
+        {vehicles.map((v) => (
+          <VehicleCard key={v.id} vehicle={v} agency={agency} />
         ))}
       </div>
     </section>
   );
 }
 
-function Services() {
-  const services = [
-    {
-      icon: UserRound,
-      title: "Location avec chauffeur",
-      text: "Un chauffeur expérimenté vous conduit où vous le souhaitez, en toute sécurité et sans souci de conduite.",
-    },
-    {
-      icon: KeyRound,
-      title: "Location sans chauffeur",
-      text: "Prenez le volant vous-même et profitez d'une totale liberté de déplacement, à votre rythme.",
-    },
-  ];
+function Services({ services }: { services: { id: string; title: string; description: string }[] }) {
+  const icons = [UserRound, KeyRound, Car, BadgeCheck];
   return (
     <section id="services" className="scroll-mt-20 bg-primary py-20">
       <div className="mx-auto max-w-6xl px-4">
@@ -300,18 +285,21 @@ function Services() {
           </h2>
         </div>
         <div className="grid gap-6 md:grid-cols-2">
-          {services.map((s) => (
-            <div
-              key={s.title}
-              className="flex flex-col items-start gap-4 rounded-2xl bg-white/10 p-8 backdrop-blur transition-colors hover:bg-white/15"
-            >
-              <span className="grid h-14 w-14 place-items-center rounded-xl bg-accent text-accent-foreground">
-                <s.icon className="h-7 w-7" />
-              </span>
-              <h3 className="font-display text-2xl font-bold text-primary-foreground">{s.title}</h3>
-              <p className="text-primary-foreground/80">{s.text}</p>
-            </div>
-          ))}
+          {services.map((s, i) => {
+            const Icon = icons[i % icons.length];
+            return (
+              <div
+                key={s.id}
+                className="flex flex-col items-start gap-4 rounded-2xl bg-white/10 p-8 backdrop-blur transition-colors hover:bg-white/15"
+              >
+                <span className="grid h-14 w-14 place-items-center rounded-xl bg-accent text-accent-foreground">
+                  <Icon className="h-7 w-7" />
+                </span>
+                <h3 className="font-display text-2xl font-bold text-primary-foreground">{s.title}</h3>
+                <p className="text-primary-foreground/80">{s.description}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -351,13 +339,15 @@ function WhyUs() {
   );
 }
 
-function Contact() {
+function Contact({ agency }: { agency: AgencyInfo }) {
   const [form, setForm] = useState({ name: "", phone: "", dates: "", message: "" });
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    store.addMessage(form);
     const text = `Bonjour, je suis ${form.name} (${form.phone}). Dates souhaitées : ${form.dates}. ${form.message}`;
-    window.open(waLink(WA_ALLAOUA, text), "_blank");
+    window.open(waLink(agency.phone1, text), "_blank");
+    setForm({ name: "", phone: "", dates: "", message: "" });
   };
 
   const inputClass =
@@ -381,26 +371,26 @@ function Contact() {
                 <div>
                   <h3 className="font-display font-bold text-foreground">Adresse</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {ADDRESS}
+                    {agency.address}
                     <br />
                     <span className="text-xs">(à 100 m de la protection civile — Plus Code : GMWP+PM Seddouk)</span>
                   </p>
                 </div>
               </div>
               <div className="mt-5 space-y-3 border-t border-border pt-5">
-                <a href={`tel:+213${PHONE_ALLAOUA.slice(1)}`} className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary">
-                  <Phone className="h-4 w-4 text-accent" /> Allaoua : 0770 64 65 57
+                <a href={telLink(agency.phone1)} className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary">
+                  <Phone className="h-4 w-4 text-accent" /> Allaoua : {formatPhone(agency.phone1)}
                 </a>
-                <a href={`tel:+213${PHONE_IDIR.slice(1)}`} className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary">
-                  <Phone className="h-4 w-4 text-accent" /> Idir : 0540 84 58 43
+                <a href={telLink(agency.phone2)} className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary">
+                  <Phone className="h-4 w-4 text-accent" /> Idir : {formatPhone(agency.phone2)}
                 </a>
                 <p className="flex items-center gap-3 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4 text-accent" /> Ouvert 24h/24 — 7j/7
+                  <Clock className="h-4 w-4 text-accent" /> {agency.hours}
                 </p>
               </div>
               <div className="mt-5 grid grid-cols-2 gap-3">
                 <a
-                  href={waLink(WA_ALLAOUA, "Bonjour, je souhaite louer un véhicule.")}
+                  href={waLink(agency.phone1, "Bonjour, je souhaite louer un véhicule.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 rounded-lg bg-whatsapp px-4 py-2.5 text-sm font-semibold text-whatsapp-foreground"
@@ -408,7 +398,7 @@ function Contact() {
                   <MessageCircle className="h-4 w-4" /> WhatsApp Allaoua
                 </a>
                 <a
-                  href={waLink(WA_IDIR, "Bonjour, je souhaite louer un véhicule.")}
+                  href={waLink(agency.phone2, "Bonjour, je souhaite louer un véhicule.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 rounded-lg bg-whatsapp px-4 py-2.5 text-sm font-semibold text-whatsapp-foreground"
@@ -421,7 +411,7 @@ function Contact() {
             <div className="overflow-hidden rounded-2xl border border-border shadow-sm">
               <iframe
                 title="ALLAOUA Location sur Google Maps"
-                src="https://maps.google.com/maps?q=GMWP%2BPM%20Seddouk%2C%20Alg%C3%A9rie&z=15&output=embed"
+                src={agency.mapsUrl}
                 className="h-64 w-full border-0"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -467,7 +457,7 @@ function Contact() {
   );
 }
 
-function Footer() {
+function Footer({ agency }: { agency: AgencyInfo }) {
   return (
     <footer className="bg-navy-deep py-12 text-primary-foreground">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:grid-cols-3">
@@ -497,10 +487,10 @@ function Footer() {
         <div>
           <h4 className="font-display font-bold">Coordonnées</h4>
           <div className="mt-3 space-y-2 text-sm text-primary-foreground/70">
-            <p>{ADDRESS}</p>
-            <a href={`tel:+213${PHONE_ALLAOUA.slice(1)}`} className="block hover:text-accent">Allaoua : 0770 64 65 57</a>
-            <a href={`tel:+213${PHONE_IDIR.slice(1)}`} className="block hover:text-accent">Idir : 0540 84 58 43</a>
-            <p>Ouvert 24h/24</p>
+            <p>{agency.address}</p>
+            <a href={telLink(agency.phone1)} className="block hover:text-accent">Allaoua : {formatPhone(agency.phone1)}</a>
+            <a href={telLink(agency.phone2)} className="block hover:text-accent">Idir : {formatPhone(agency.phone2)}</a>
+            <p>{agency.hours}</p>
           </div>
         </div>
       </div>
@@ -511,10 +501,10 @@ function Footer() {
   );
 }
 
-function FloatingWhatsApp() {
+function FloatingWhatsApp({ agency }: { agency: AgencyInfo }) {
   return (
     <a
-      href={waLink(WA_ALLAOUA, "Bonjour, je souhaite louer un véhicule. Pouvez-vous me donner plus d'informations ?")}
+      href={waLink(agency.phone1, "Bonjour, je souhaite louer un véhicule. Pouvez-vous me donner plus d'informations ?")}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Nous contacter sur WhatsApp"
@@ -526,18 +516,19 @@ function FloatingWhatsApp() {
 }
 
 function Index() {
+  const { vehicles, services, agency } = useAppData();
   return (
     <div className="font-sans">
-      <Header />
+      <Header agency={agency} />
       <main>
-        <Hero />
-        <Vehicles />
-        <Services />
+        <Hero agency={agency} />
+        <Vehicles vehicles={vehicles} agency={agency} />
+        <Services services={services} />
         <WhyUs />
-        <Contact />
+        <Contact agency={agency} />
       </main>
-      <Footer />
-      <FloatingWhatsApp />
+      <Footer agency={agency} />
+      <FloatingWhatsApp agency={agency} />
     </div>
   );
 }
