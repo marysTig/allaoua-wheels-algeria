@@ -77,16 +77,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "ALLAOUA Location — Location de voitures à Seddouk" },
+      { name: "description", content: "Location de voitures avec ou sans chauffeur à Seddouk, Algérie. Disponible 24h/24. Minibus 9 places, diesel, prix compétitifs." },
+      { name: "author", content: "Ets ACHOURI" },
+      { property: "og:title", content: "ALLAOUA Location — Location de voitures à Seddouk" },
+      { property: "og:description", content: "Location de voitures avec ou sans chauffeur à Seddouk. Disponible 24h/24." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap",
+      },
       {
         rel: "stylesheet",
         href: appCss,
