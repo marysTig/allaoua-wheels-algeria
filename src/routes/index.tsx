@@ -283,7 +283,7 @@ function Services({ services }: { services: { id: string; title: string; descrip
         </div>
         <div className="grid gap-6 md:grid-cols-2">
           {services.map((s, i) => {
-            const Icon = icons[i % icons.length];
+            const Icon = icons[i % icons.length] ?? Car;
             return (
               <div
                 key={s.id}
