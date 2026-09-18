@@ -188,7 +188,7 @@ function VehicleCard({ vehicle, agency }: { vehicle: Vehicle; agency: AgencyInfo
   ];
   return (
     <article className="group flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-lg sm:rounded-2xl">
-      <div className="relative overflow-hidden">
+      <Link to="/v/$id" params={{ id: vehicle.id }} className="relative block overflow-hidden">
         <img
           src={vehicle.image}
           alt={`${vehicle.name} en location chez ALLAOUA Location`}
@@ -203,9 +203,11 @@ function VehicleCard({ vehicle, agency }: { vehicle: Vehicle; agency: AgencyInfo
             Indisponible
           </span>
         )}
-      </div>
+      </Link>
       <div className="flex flex-1 flex-col p-3 sm:p-5">
-        <h3 className="font-display text-base font-bold text-foreground sm:text-xl">{vehicle.name}</h3>
+        <Link to="/v/$id" params={{ id: vehicle.id }} className="hover:underline">
+          <h3 className="font-display text-base font-bold text-foreground sm:text-xl">{vehicle.name}</h3>
+        </Link>
         <div className="mt-3 grid grid-cols-1 gap-1.5 sm:mt-4 sm:grid-cols-2 sm:gap-2.5">
           {specs.map((spec) => (
             <div key={spec.label} className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground sm:gap-2 sm:text-sm">

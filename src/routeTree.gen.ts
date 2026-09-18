@@ -17,6 +17,7 @@ import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
 import { Route as AdminParametresRouteImport } from './routes/admin.parametres'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminVehiculesRouteImport } from './routes/admin.vehicules'
+import { Route as VIdRouteImport } from './routes/v.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const AdminVehiculesRoute = AdminVehiculesRouteImport.update({
   path: '/vehicules',
   getParentRoute: () => AdminRoute,
 } as any)
+const VIdRoute = VIdRouteImport.update({
+  id: '/v/$id',
+  path: '/v/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/admin/parametres': typeof AdminParametresRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/vehicules': typeof AdminVehiculesRoute
+  '/v/$id': typeof VIdRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/admin/parametres': typeof AdminParametresRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/vehicules': typeof AdminVehiculesRoute
+  '/v/$id': typeof VIdRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/admin/parametres': typeof AdminParametresRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/vehicules': typeof AdminVehiculesRoute
+  '/v/$id': typeof VIdRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/admin/parametres'
     | '/admin/services'
     | '/admin/vehicules'
+    | '/v/$id'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/admin/parametres'
     | '/admin/services'
     | '/admin/vehicules'
+    | '/v/$id'
     | '/admin'
   id:
     | '__root__'
@@ -118,12 +129,14 @@ export interface FileRouteTypes {
     | '/admin/parametres'
     | '/admin/services'
     | '/admin/vehicules'
+    | '/v/$id'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  VIdRoute: typeof VIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminVehiculesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/v/$id': {
+      id: '/v/$id'
+      path: '/v/$id'
+      fullPath: '/v/$id'
+      preLoaderRoute: typeof VIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -210,6 +230,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  VIdRoute: VIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
