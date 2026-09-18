@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Lock } from "lucide-react";
 
@@ -94,6 +94,11 @@ function LoginPage() {
           </button>
         </div>
       </form>
+      <div className="mt-8">
+        <Link to="/" className="text-sm font-medium text-primary-foreground/70 transition-colors hover:text-accent">
+          ← Retour au site
+        </Link>
+      </div>
     </div>
   );
 }
