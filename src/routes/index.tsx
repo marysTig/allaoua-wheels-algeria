@@ -197,9 +197,7 @@ function VehicleCard({ vehicle, agency }: { vehicle: Vehicle; agency: AgencyInfo
           height={768}
           className="aspect-[4/3] w-full bg-muted object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <span className="absolute left-2 top-2 max-w-[calc(100%-1rem)] truncate rounded-full bg-accent px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-accent-foreground sm:left-3 sm:top-3 sm:px-3 sm:text-xs">
-          {vehicle.category}
-        </span>
+
         {!vehicle.available && (
           <span className="absolute right-3 top-3 rounded-full bg-destructive px-3 py-1 text-xs font-bold uppercase tracking-wide text-destructive-foreground">
             Indisponible
@@ -281,19 +279,19 @@ function Services({ services }: { services: { id: string; title: string; descrip
             Une formule pour chaque besoin
           </h2>
         </div>
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid grid-cols-2 gap-4 sm:gap-6">
           {services.map((s, i) => {
             const Icon = icons[i % icons.length] ?? Car;
             return (
               <div
                 key={s.id}
-                className="flex flex-col items-start gap-4 rounded-2xl bg-white/10 p-8 backdrop-blur transition-colors hover:bg-white/15"
+                className="flex flex-col items-start gap-3 sm:gap-4 rounded-2xl bg-white/10 p-4 sm:p-8 backdrop-blur transition-colors hover:bg-white/15"
               >
-                <span className="grid h-14 w-14 place-items-center rounded-xl bg-accent text-accent-foreground">
-                  <Icon className="h-7 w-7" />
+                <span className="grid h-10 w-10 sm:h-14 sm:w-14 place-items-center rounded-xl bg-accent text-accent-foreground">
+                  <Icon className="h-5 w-5 sm:h-7 sm:w-7" />
                 </span>
-                <h3 className="font-display text-2xl font-bold text-primary-foreground">{s.title}</h3>
-                <p className="text-primary-foreground/80">{s.description}</p>
+                <h3 className="font-display text-lg sm:text-2xl font-bold text-primary-foreground">{s.title}</h3>
+                <p className="text-sm sm:text-base text-primary-foreground/80">{s.description}</p>
               </div>
             );
           })}
@@ -318,17 +316,17 @@ function WhyUs() {
           Pourquoi nous choisir
         </h2>
       </div>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
         {points.map((p) => (
           <div
             key={p.title}
-            className="rounded-2xl border border-border bg-card p-6 text-center shadow-sm transition-shadow hover:shadow-md"
+            className="rounded-2xl border border-border bg-card p-4 sm:p-6 text-center shadow-sm transition-shadow hover:shadow-md"
           >
-            <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-accent/15 text-accent">
-              <p.icon className="h-7 w-7" />
+            <span className="mx-auto grid h-10 w-10 sm:h-14 sm:w-14 place-items-center rounded-full bg-accent/15 text-accent">
+              <p.icon className="h-5 w-5 sm:h-7 sm:w-7" />
             </span>
-            <h3 className="mt-4 font-display text-lg font-bold text-foreground">{p.title}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{p.text}</p>
+            <h3 className="mt-3 sm:mt-4 font-display text-sm sm:text-lg font-bold text-foreground">{p.title}</h3>
+            <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">{p.text}</p>
           </div>
         ))}
       </div>

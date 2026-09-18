@@ -10,7 +10,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 
-import { logout, useIsAuthenticated } from "@/lib/admin-store";
+import { logout, useIsAuthenticated, useAppData, isExpiringSoon } from "@/lib/admin-store";
 
 const LINKS = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -23,6 +23,9 @@ const LINKS = [
 export function AdminShell({ title, children }: { title: string; children: ReactNode }) {
   const isAuth = useIsAuthenticated();
   const navigate = useNavigate();
+  const { vehicles } = useAppData();
+
+  const expiringCount = vehicles.filter((v) => isExpiringSoon(v.insuranceEnd) || isExpiringSoon(v.vignetteEnd)).length;
 
   useEffect(() => {
     if (!isAuth) navigate({ to: "/admin/login", replace: true });
@@ -56,11 +59,16 @@ export function AdminShell({ title, children }: { title: string; children: React
             >
               <l.icon className="h-4 w-4" />
               {l.label}
+              {l.label === "Véhicules" && expiringCount > 0 && (
+                <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold text-destructive-foreground">
+                  {expiringCount}
+                </span>
+              )}
             </Link>
           ))}
           <button
-            onClick={() => {
-              logout();
+            onClick={async () => {
+              await logout();
               navigate({ to: "/admin/login", replace: true });
             }}
             className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-primary-foreground/75 transition-colors hover:bg-white/10"

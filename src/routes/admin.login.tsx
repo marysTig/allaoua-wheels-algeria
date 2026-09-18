@@ -18,17 +18,22 @@ export const Route = createFileRoute("/admin/login")({
 function LoginPage() {
   const navigate = useNavigate();
   const isAuth = useIsAuthenticated();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isAuth) navigate({ to: "/admin", replace: true });
   }, [isAuth, navigate]);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (login(username, password)) {
+    setLoading(true);
+    setError("");
+    const ok = await login(email, password);
+    setLoading(false);
+    if (ok) {
       navigate({ to: "/admin", replace: true });
     } else {
       setError("Identifiant ou mot de passe incorrect.");
@@ -52,22 +57,40 @@ function LoginPage() {
         <div className="mt-6 space-y-4">
           <div>
             <label htmlFor="u" className="mb-1.5 block text-sm font-medium text-foreground">
-              Identifiant
+              Adresse e-mail
             </label>
-            <input id="u" value={username} onChange={(e) => setUsername(e.target.value)} className={input} required />
+            <input
+              id="u"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={input}
+              required
+              autoComplete="email"
+              placeholder="admin@example.com"
+            />
           </div>
           <div>
             <label htmlFor="p" className="mb-1.5 block text-sm font-medium text-foreground">
               Mot de passe
             </label>
-            <input id="p" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={input} required />
+            <input
+              id="p"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={input}
+              required
+              autoComplete="current-password"
+            />
           </div>
           {error && <p className="text-sm font-medium text-destructive">{error}</p>}
           <button
             type="submit"
-            className="w-full rounded-lg bg-accent px-4 py-3 font-semibold text-accent-foreground transition-transform hover:scale-[1.02]"
+            disabled={loading}
+            className="w-full rounded-lg bg-accent px-4 py-3 font-semibold text-accent-foreground transition-transform hover:scale-[1.02] disabled:opacity-60"
           >
-            Se connecter
+            {loading ? "Connexion…" : "Se connecter"}
           </button>
         </div>
       </form>
